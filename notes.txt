@@ -1,0 +1,236 @@
+THE ROLE OF ORM/ORD
+CONNECTING MONGGOOSE TO MONGO
+DEFINING A MODEL
+MONGOOSE CRUD
+
+
+MONGOOSE
+--connecting a mongo application with node or phyton or other 
+--IT IS ODM--OBJECT DATA MAPPER/OBJECT DOCUMENT MAPPER
+--maps the data to useable javascipt objects
+--build complex queries using the JS 
+--mongoose maps data bases to the object
+--for the SQL databases we use the ORM(Object Relational Model)
+--object modelling for node.js
+
+CONNECTING MONGOOSE WITH MONGO 
+--install the mongoose using 
+npm init -y
+npm i mongoose
+touch index.js
+const mongoose=require('mongoose');
+mongoose.connect('link');
+// default mongo port is 27017 where it will be served and the database its gonna use
+ctrl+c to stop the server
+
+this just makes a connection 
+
+const mongoose=require('mongoose');
+
+
+--Mongoose does the OPERATION BUFFERING that makes loading it faster
+mongoose.connect('mongodb://localhost:27017/movieApp')
+.then(()=>{
+    console.log('CONNECTION OPEN')
+})
+
+.catch(err=>{
+    console.log('OH NO ERROR')
+})
+//making connectio and handling the error
+
+OUR FIRST MONGOOSE MODEL
+--to have easier way to interact with the javascript
+--models are just the javascript classes that we make with assistance of mongoose that represent information in a mongoose database or a collection
+--there are differernt functionalities that can be applied to the model
+--every different resource we use is we need a model
+--SCHEMA is like a gameplan or mapping the key to the value
+--schema defines the types or what a given thing should look like
+--schema is a concept on the js side 
+--in js we can intiate a object and then use different methods to updaate
+
+
+Model.find()
+--we can treat a result back as promise though its not a promise 
+--they are the thenable object
+Movie.find({year:{$gte:2010}}).then(data=>console.log(data))
+//we can find one or many using this command in the powershell or git 
+--exec() method actually returns a full promise and not a half object 
+--exec() gives a better stack trace
+Movie.findById('').then(m=>console.log(m))
+
+
+Model.updateOne() or Model.updateMany()
+--matches the first thing and updates that only
+
+
+MONGOOSE VALIDATIONS
+--if we add any additional information which is not there it doesn't break the code but doesn't grt added as well
+const productSchema=new mongoose.Schema({
+    name:{
+        type:String,
+        required: true
+    },
+    price: {
+        type:Number,
+        required: true
+    }
+});
+//these additional properties are mongoose validations 
+
+ADDITIONAL SCHEMA CONSTRAINTS
+--we can also set a default value by using the default value
+--we can also set a maxlength
+--others can be min etc 
+
+
+
+const mongoose=require('mongoose');
+mongoose.connect('mongodb://localhost:27017/shopApp')
+.then(()=>{
+    console.log('CONNECTION OPEN')
+})
+
+
+VALIDATING MONGOOSE UPDATES
+
+
+const mongoose=require('mongoose');
+mongoose.connect('mongodb://localhost:27017/shopApp')
+.then(()=>{
+    console.log('CONNECTION OPEN')
+})
+
+.catch(err=>{
+    console.log('OH NO ERROR')
+})
+const productSchema=new mongoose.Schema({
+    name:{
+        type:String,
+        required: true,
+        maxlength:20
+    },
+    price: {
+        type:Number,
+        required: true,
+        min: 0
+    },
+    onSale: {
+        type:Boolean,
+        default:false
+    },
+    categories:[String],
+    stock:{
+        qty: {
+            online: {
+                type: Number,
+                default:0
+            },
+            instore:{
+                type:Number,
+                default:0
+            }
+        }
+    }
+});
+const Product=mongoose.model('Product',productSchema);
+const bike=new Product({name:'Mountain Bike3',price:599,categories:['cycling','safety']})
+bike.save()
+.then(data=>{
+    console.log("IT WORKED!!")
+    console.log(data);
+})
+.catch(err=>{
+    console.log("OH NO ERROR!")
+    console.log(err.errors.name.properties.message);
+})
+
+--enum provides an array that ensures thar you are picking up
+
+
+
+
+
+PROBLEM WITH VALIDATING UPDATES IN MONGOOSE
+--when we are updating there is an issue that validations will fail when we are updating the things
+--validations get automatically when something is created and we need to runvalidtors as true to perform them
+
+
+
+MODEL INSTANCE METHODS
+--instance method is a method that will be available to the all the inndivual instance of product
+--class method are in generaal 
+--if we call a method on particular instanc then it is a model method
+var animalSchema=new Schema({name:String,,type:String});
+animalSchema.methods.findSimmlarTypes=function(cb){
+return mongoose.model('Animal').find({type:this.type},cb);
+};
+
+
+
+STATIC METHODS
+--fancy way to do CRUD operations 
+
+
+
+
+
+MONGOOSE VIRTUALS
+--virtuals are the ability to add properties that we can add to a database
+--it behaves as if it is an actual property
+--it creates a virtual property 
+--only on mongoose side of things 
+--we can also define set version of the virtual to update the d\things directly
+const mongoose=require('mongoose');
+mongoose.connect('mongodb://localhost:27017/App')
+.then(()=>{
+    console.log('CONNECTION OPEN')
+})
+
+.catch(err=>{
+    console.log('OH NO ERROR')
+})
+
+const personSchema=new mongoose.Schema({
+    first:String,
+    last:String
+})
+personSchema.virtual('fullName').
+get(function(){
+    return `${this.first} ${this.last}`;}).
+
+    set(function(v){
+        this.first=v.substr(0,v.indexOf(' '));
+        this.last=v.substr=v.substr(v.indexOf(' ')+1);
+    });
+
+const Person=mongoose.model('Person',personSchema);
+const tammy=new Person({first:'tammy',last:'CHOW'})
+tammy.fullName='tammy johnes';
+console.log(tammy.fullName)
+
+
+DEFINING MONGOOSE MIDDLEWARE
+==mongoose gives us the ability to run the code before and after certain things are called
+--right before something is removed or saved
+--pre or post hook before and after 
+--for example, when we delete a user we simply can't delete the user only we will be required to delete all the post that the user has created before using that particular account 
+--we can add both .pre and .post
+--.pre execute before and .post wxecutes after 
+--we can set a post hook to find the average of so many posts 
+personSchema.pre('save', async function(){
+    this.first='YO',
+    this.last='MUMMA',
+    console.log("ABOUT TO SAVE!!!")
+    
+})
+personSchema.post('save',async function() {
+    console.log("JUST SAVED!!!")
+})
+
+
+
+
+
+
+
